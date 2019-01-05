@@ -88,19 +88,21 @@ function ResultsHolder (_release) {
   var i = 0
   this.release = function (err, result) {
     if (i !== 0) that._results[i - 1] = result
-
-    if (!err && i < that._list.length) {
-      if (that._each) {
-        makeCall(that._callThat, that._each, that._list[i++], that.release)
+    
+    if(that._list){
+      if (!err && i < that._list.length) {
+        if (that._each) {
+          makeCall(that._callThat, that._each, that._list[i++], that.release)
+        } else {
+          makeCall(that._callThat, that._list[i++], that._arg, that.release)
+        }
       } else {
-        makeCall(that._callThat, that._list[i++], that._arg, that.release)
+        that._callback.call(that._callThat, err, that._results)
+        reset.call(that)
+        that._results = []
+        i = 0
+        that._released(that)
       }
-    } else {
-      that._callback.call(that._callThat, err, that._results)
-      reset.call(that)
-      that._results = []
-      i = 0
-      that._released(that)
     }
   }
 }
